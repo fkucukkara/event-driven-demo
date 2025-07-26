@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  # RabbitMQ - Development configuration
+  rabbitmq:
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - eventdriven-network
+
+  # Order API - Development configuration
+  order-api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
+    ports:
+      - "5001:8080"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+    networks:
+      - eventdriven-network
+
+  # Inventory API - Development configuration  
+  inventory-api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
+    ports:
+      - "5002:8080"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+    networks:
+      - eventdriven-network
+
+  # Notification API - Development configuration
+  notification-api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
+    ports:
+      - "5003:8080"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+    networks:
+      - eventdriven-network
+
+networks:
+  eventdriven-network:
+    driver: bridge
+
+volumes:
+  rabbitmq_data:

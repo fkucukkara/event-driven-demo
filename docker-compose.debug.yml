@@ -1,0 +1,110 @@
+version: '3.8'
+
+services:
+  # RabbitMQ - Debug configuration
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    container_name: eventdriven-rabbitmq-debug
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_debug_data:/var/lib/rabbitmq
+    networks:
+      - eventdriven-debug-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Order API - Debug configuration
+  order-api:
+    image: orderapi:dev
+    build:
+      context: .
+      dockerfile: src/APIs/OrderAPI/Dockerfile
+      target: build
+    container_name: eventdriven-order-api-debug
+    ports:
+      - "5001:8080"
+      - "5011:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
+      - DOTNET_USE_POLLING_FILE_WATCHER=true
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+      - ./src:/src
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - eventdriven-debug-network
+    restart: unless-stopped
+
+  # Inventory API - Debug configuration  
+  inventory-api:
+    image: inventoryapi:dev
+    build:
+      context: .
+      dockerfile: src/APIs/InventoryAPI/Dockerfile
+      target: build
+    container_name: eventdriven-inventory-api-debug
+    ports:
+      - "5002:8080"
+      - "5012:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
+      - DOTNET_USE_POLLING_FILE_WATCHER=true
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+      - ./src:/src
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - eventdriven-debug-network
+    restart: unless-stopped
+
+  # Notification API - Debug configuration
+  notification-api:
+    image: notificationapi:dev
+    build:
+      context: .
+      dockerfile: src/APIs/NotificationAPI/Dockerfile
+      target: build
+    container_name: eventdriven-notification-api-debug
+    ports:
+      - "5003:8080"
+      - "5013:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
+      - DOTNET_USE_POLLING_FILE_WATCHER=true
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+      - ./src:/src
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - eventdriven-debug-network
+    restart: unless-stopped
+
+networks:
+  eventdriven-debug-network:
+    driver: bridge
+
+volumes:
+  rabbitmq_debug_data:

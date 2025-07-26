@@ -1,0 +1,81 @@
+### Event-Driven Architecture Demo - API Test Requests
+
+### 1. Check Inventory (before creating order)
+GET http://localhost:5002/api/inventory/products
+Accept: application/json
+
+###
+
+### 2. Create a new order
+POST http://localhost:5001/api/orders
+Content-Type: application/json
+
+{
+  "customerEmail": "john.doe@example.com",
+  "items": [
+    {
+      "productId": "LAPTOP001",
+      "productName": "Gaming Laptop",
+      "quantity": 2,
+      "unitPrice": 999.99
+    },
+    {
+      "productId": "MOUSE001",
+      "productName": "Wireless Mouse",
+      "quantity": 1,
+      "unitPrice": 29.99
+    }
+  ]
+}
+
+###
+
+### 3. Check Inventory (after creating order - should see reserved quantities)
+GET http://localhost:5002/api/inventory/products
+Accept: application/json
+
+###
+
+### 4. Check Notifications (should see order confirmation)
+GET http://localhost:5003/api/notifications
+Accept: application/json
+
+###
+
+### 5. Get specific order (replace {orderId} with actual order ID from step 2)
+GET http://localhost:5001/api/orders/{orderId}
+Accept: application/json
+
+###
+
+### 6. Update order status (replace {orderId} with actual order ID)
+PUT http://localhost:5001/api/orders/{orderId}
+Content-Type: application/json
+
+{
+  "status": "Shipped"
+}
+
+###
+
+### 7. Check notifications again (should see status update notification)
+GET http://localhost:5003/api/notifications
+Accept: application/json
+
+###
+
+### 8. Get notifications for specific customer
+GET http://localhost:5003/api/notifications/by-email/john.doe@example.com
+Accept: application/json
+
+###
+
+### 9. Get all orders
+GET http://localhost:5001/api/orders
+Accept: application/json
+
+###
+
+### 10. Check specific product inventory
+GET http://localhost:5002/api/inventory/products/LAPTOP001
+Accept: application/json

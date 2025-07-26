@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  # Message Broker
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    container_name: eventdriven-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - eventdriven-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Order API
+  order-api:
+    build:
+      context: .
+      dockerfile: src/APIs/OrderAPI/Dockerfile
+    container_name: eventdriven-order-api
+    ports:
+      - "5001:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - eventdriven-network
+    restart: unless-stopped
+
+  # Inventory API
+  inventory-api:
+    build:
+      context: .
+      dockerfile: src/APIs/InventoryAPI/Dockerfile
+    container_name: eventdriven-inventory-api
+    ports:
+      - "5002:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - eventdriven-network
+    restart: unless-stopped
+
+  # Notification API
+  notification-api:
+    build:
+      context: .
+      dockerfile: src/APIs/NotificationAPI/Dockerfile
+    container_name: eventdriven-notification-api
+    ports:
+      - "5003:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - eventdriven-network
+    restart: unless-stopped
+
+networks:
+  eventdriven-network:
+    driver: bridge
+
+volumes:
+  rabbitmq_data:
