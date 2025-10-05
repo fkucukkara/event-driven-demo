@@ -31,7 +31,7 @@ Order API → RabbitMQ → Inventory API (reserves stock)
 
 ### Prerequisites
 - Docker and Docker Compose
-- .NET 9.0 SDK (for local development)
+- .NET 9.0 SDK
 
 ### Running with Docker Compose
 
