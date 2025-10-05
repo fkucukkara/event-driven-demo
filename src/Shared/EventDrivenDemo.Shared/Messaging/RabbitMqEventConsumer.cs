@@ -1,5 +1,3 @@
-using System.Text;
-using System.Text.Json;
 using EventDrivenDemo.Shared.Events;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -7,6 +5,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using System.Text;
+using System.Text.Json;
 
 namespace EventDrivenDemo.Shared.Messaging;
 
