@@ -141,3 +141,8 @@ This entire project was designed and implemented by **Augment Agent**, showcasin
 - **Augment Code**: [https://www.augmentcode.com](https://www.augmentcode.com)
 - **Event-Driven Architecture**: Study the patterns demonstrated in this project
 - **Microservices**: Explore the service boundaries and communication patterns
+
+## License
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+This project is licensed under the MIT License. See the [`LICENSE`](LICENSE) file for details.
